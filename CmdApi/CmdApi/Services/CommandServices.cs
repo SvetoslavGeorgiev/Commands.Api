@@ -3,9 +3,7 @@
     using CmdApi.Data;
     using CmdApi.Models;
     using CmdApi.ViewModels;
-    using Microsoft.AspNetCore.Http.HttpResults;
     using Microsoft.EntityFrameworkCore;
-    using System;
     using System.Threading.Tasks;
 
     public class CommandServices : ICommandServices
@@ -54,6 +52,46 @@
             await dbContext.SaveChangesAsync();
 
             return command.Id;
+        }
+
+        public async Task<CommandViewModel> UpdateAsync(int id, CommandViewModel commandViewModel)
+        {
+
+            var command = new Command
+            {
+                Id = commandViewModel.Id == 0 ? id : commandViewModel.Id,
+                Platform = commandViewModel.Platform,
+                CommandLine = commandViewModel.CommandLine,
+                HowTo = commandViewModel.HowTo
+            };
+
+            dbContext.Entry(command).State = EntityState.Modified;
+
+
+            dbContext.Update(command);
+            await dbContext.SaveChangesAsync();
+
+            var commandFromDB = await GetCommandAsync(command.Id);
+
+            return commandFromDB;
+        }
+
+        public async Task<CommandViewModel> DeleteAsync(int id)
+        {
+
+            var entity = dbContext.Commands.Find(id);
+
+            if (entity == null)
+            {
+                return null;
+            }
+
+            var commandFromDB = await GetCommandAsync(id);
+
+            dbContext.Commands.Remove(entity);
+            await dbContext.SaveChangesAsync();
+
+            return commandFromDB;
         }
     }
 }

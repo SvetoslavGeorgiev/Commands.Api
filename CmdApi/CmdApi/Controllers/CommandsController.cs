@@ -19,7 +19,7 @@
 
         [HttpGet]
         [Route("getAll")]
-        public async Task<IActionResult> GetAll() 
+        public async Task<IActionResult> GetAll()
             => Ok(await commandServices.GetAllCommandsAsync());
 
         [HttpGet("{id}")]
@@ -34,7 +34,7 @@
 
             var command = await commandServices.GetCommandAsync(commandId);
 
-            return CreatedAtAction( nameof(GetCommandById), new CommandViewModel { Id = commandId}, command);
+            return CreatedAtAction(nameof(GetCommandById), new CommandViewModel { Id = commandId }, command);
         }
 
         [HttpPost]
@@ -46,6 +46,31 @@
             var command = await commandServices.GetCommandAsync(commandId);
 
             return CreatedAtAction(nameof(GetCommandById), new CommandViewModel { Id = commandId }, command);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] CommandViewModel commandViewModel)
+        {
+
+            var model = await commandServices.UpdateAsync(id, commandViewModel);
+
+            return Ok(model);
+
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            
+            var model = await commandServices.DeleteAsync(id);
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(model);
+
         }
     }
 }

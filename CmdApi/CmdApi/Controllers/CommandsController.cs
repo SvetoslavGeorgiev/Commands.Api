@@ -32,7 +32,20 @@
         {
             var commandId = await commandServices.GreateCommandAsync(commandViewModel);
 
-            return CreatedAtAction(nameof(GetCommandById), new CommandViewModel { Id = commandId}, commandViewModel);
+            var command = await commandServices.GetCommandAsync(commandId);
+
+            return CreatedAtAction( nameof(GetCommandById), new CommandViewModel { Id = commandId}, command);
+        }
+
+        [HttpPost]
+        [Route("CreateForm")]
+        public async Task<IActionResult> CreateForm([FromForm] CommandViewModel commandViewModel)
+        {
+            var commandId = await commandServices.GreateCommandAsync(commandViewModel);
+
+            var command = await commandServices.GetCommandAsync(commandId);
+
+            return CreatedAtAction(nameof(GetCommandById), new CommandViewModel { Id = commandId }, command);
         }
     }
 }
